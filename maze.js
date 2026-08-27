@@ -84,8 +84,11 @@ document.addEventListener("keydown",function(event){
     if (event.key=="ArrowUp"){
         const newX = player.px+Math.cos(player.angle)*speed
         const newY = player.py+Math.sin(player.angle)*speed
-        if (notInWall(newX,newY)){
+        if (notInWall(newX,player.py)){
             player.px = newX;
+            draw2d();
+        }
+        if (notInWall(player.px,newY)){
             player.py = newY;
             draw2d();
         }
@@ -93,8 +96,11 @@ document.addEventListener("keydown",function(event){
     if (event.key=="ArrowDown"){
         const newX = player.px-Math.cos(player.angle)*speed
         const newY = player.py-Math.sin(player.angle)*speed
-        if (notInWall(newX,newY)){
+        if (notInWall(newX,player.py)){
             player.px = newX;
+            draw2d();
+        }
+        if (notInWall(player.px,newY)){
             player.py = newY;
             draw2d();
         }
