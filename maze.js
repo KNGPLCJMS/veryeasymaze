@@ -1,5 +1,7 @@
 //DDA Raycaster
-const speed = 0.1
+const speed = 3.2
+const turnSpeed = 2.8
+const keys = {};
 const map = [
     "1111111111",
     "1000000001",
@@ -81,37 +83,47 @@ function notInWall(px,py){
 
 
 document.addEventListener("keydown",function(event){
-    if (event.key=="ArrowUp"){
-        const newX = player.px+Math.cos(player.angle)*speed
-        const newY = player.py+Math.sin(player.angle)*speed
-        if (notInWall(newX,player.py)){
-            player.px = newX;
-            draw2d();
-        }
-        if (notInWall(player.px,newY)){
-            player.py = newY;
-            draw2d();
-        }
+    if (event.key ==="ArrowUp"||event.key ==="ArrowDown"||event.key ==="ArrowLeft"||event.key ==="ArrowRight"){
+        event.preventDefault();
+        keys[event.key]=true
     }
-    if (event.key=="ArrowDown"){
-        const newX = player.px-Math.cos(player.angle)*speed
-        const newY = player.py-Math.sin(player.angle)*speed
-        if (notInWall(newX,player.py)){
-            player.px = newX;
-            draw2d();
-        }
-        if (notInWall(player.px,newY)){
-            player.py = newY;
-            draw2d();
-        }
-    }
-    if (event.key=="ArrowRight"){
-        player.angle+=0.1;
-        draw2d();
-    }
-    if (event.key=="ArrowLeft"){
-        player.angle-=0.1;
-        draw2d();
-    }
+}) 
+document.addEventListener("keyup", function(event){
+    keys[event.key] = false;
 })
-draw2d();
+let lastTime = performance.now()
+function update(time){
+    const deltaTime = Math.min((time-lastTime)/1000,0.05);
+    lastTime = time;
+    if (keys["ArrowRight"]){
+        player.angle+=turnSpeed*deltaTime;
+    }
+    if (keys["ArrowLeft"]){
+        player.angle-=turnSpeed*deltaTime;
+    }
+    if (keys["ArrowUp"]){
+        const newX = player.px+Math.cos(player.angle)*speed*deltaTime
+        const newY = player.py+Math.sin(player.angle)*speed*deltaTime
+        if (notInWall(newX,player.py)){
+            player.px = newX;
+        }
+        if (notInWall(player.px,newY)){
+            player.py = newY;
+        }
+    }
+    if (keys["ArrowDown"]){
+        const newX = player.px-Math.cos(player.angle)*speed*deltaTime
+        const newY = player.py-Math.sin(player.angle)*speed*deltaTime
+        if (notInWall(newX,player.py)){
+            player.px = newX;
+        }
+        if (notInWall(player.px,newY)){
+            player.py = newY;
+
+        }
+    }
+    draw2d()
+    requestAnimationFrame(update);
+
+}
+requestAnimationFrame(update);
