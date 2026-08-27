@@ -1,4 +1,5 @@
 //DDA Raycaster
+const speed = 0.1
 const map = [
     "1111111111",
     "1000000001",
@@ -17,6 +18,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const tileSize =20;
 function drawMap(){
+    ctx.lineWidth = 1;
     for (let y = 0; y<map.length; y++){
         for (let x =0; x<map[y].length; x++){
             if (map[y][x]==="1"){
@@ -59,18 +61,51 @@ function drawPlayer() {
 
 }
 
-drawMap();
-drawPlayer();
+
+function draw2d(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMap();
+    drawPlayer();
+}
+
+function notInWall(px,py){
+    const mapX = Math.floor(px);
+    const mapY = Math.floor(py);
+
+    if (mapY<0||mapY>=map.length||mapX<0||mapX>=map[mapY].length){
+        return false
+    }
+
+    return map[mapY][mapX]==="0"
+}
 
 
-const keys = {};
-
-document.addEventListener("keydown", function(e) {
-    keys[e.key.toLowerCase()] = true;
-});
-
-document.addEventListener("keyup", function(e) {
-    keys[e.key.toLowerCase()] = false;
-});
-
-
+document.addEventListener("keydown",function(event){
+    if (event.key=="ArrowUp"){
+        const newX = player.px+Math.cos(player.angle)*speed
+        const newY = player.py+Math.sin(player.angle)*speed
+        if (notInWall(newX,newY)){
+            player.px = newX;
+            player.py = newY;
+            draw2d();
+        }
+    }
+    if (event.key=="ArrowDown"){
+        const newX = player.px-Math.cos(player.angle)*speed
+        const newY = player.py-Math.sin(player.angle)*speed
+        if (notInWall(newX,newY)){
+            player.px = newX;
+            player.py = newY;
+            draw2d();
+        }
+    }
+    if (event.key=="ArrowRight"){
+        player.angle+=0.1;
+        draw2d();
+    }
+    if (event.key=="ArrowLeft"){
+        player.angle-=0.1;
+        draw2d();
+    }
+})
+draw2d();
