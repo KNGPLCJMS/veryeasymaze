@@ -1,7 +1,7 @@
-//DDA Raycaster
 const speed = 3.2
 const turnSpeed = 2.8
 const keys = {};
+const maxDistance = 10;
 const map = [
     "1111111111",
     "1000000001",
@@ -65,7 +65,6 @@ function drawPlayer() {
 
 
 function draw2d(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMap();
     drawPlayer();
 }
@@ -122,8 +121,44 @@ function update(time){
 
         }
     }
-    draw2d()
+    player.angle %= Math.PI*2;
+    if (player.angle<0){
+        player.angle+=Math.PI*2
+    }
+    draw3d()
     requestAnimationFrame(update);
 
 }
 requestAnimationFrame(update);
+
+
+function raycaster(angle){
+    let tx = player.px;
+    let ty = player.py;
+
+    const testSize = 0.02;
+    let distance = 0;
+    while (notInWall(tx,ty)&&distance<maxDistance){
+        tx+=Math.cos(angle)*testSize;
+        ty+=Math.sin(angle)*testSize;
+        distance+=testSize;
+    }
+
+    return [distance,[tx,ty]];
+}
+function draw3d(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for(let i=0; i<=90; i++){
+        const disArray = raycaster(player.angle+((i-45)*(Math.PI/180)));
+
+        const dis = disArray[0];
+
+        const wallHeight = 500/dis;
+
+        const sx = i*10;
+        const sy = (canvas.height-wallHeight)/2;
+
+        ctx.fillStyle="#7d1212";
+        ctx.fillRect(sx,sy,10,wallHeight);
+    }
+}
