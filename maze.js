@@ -1,15 +1,7 @@
 const speed = 3.2
 const turnSpeed = 2.8
 const keys = {};
-const map = [
-    "1111111111",
-    "1000000001",
-    "1011111101",
-    "1000000101",
-    "1010011101",
-    "1001000001",
-    "1111111111"
-]
+const map = ;
 const maxDistance = Math.max(map.length,map[0].length);
 
 const player = {
@@ -29,7 +21,7 @@ function drawMap(){
     ctx.lineWidth = 1;
     for (let y = 0; y<map.length; y++){
         for (let x =0; x<map[y].length; x++){
-            if (map[y][x]==="1"){
+            if (map[y][x]===1){
                 ctx.fillStyle = "#a13939"
             } else {
                 ctx.fillStyle = "#575757"
@@ -83,7 +75,7 @@ function notInWall(px,py){
         return false
     }
 
-    return map[mapY][mapX]==="0"
+    return map[mapY][mapX]===0
 }
 
 
@@ -149,14 +141,13 @@ function raycaster(angle){
         ty+=Math.sin(angle)*testSize;
         distance+=testSize;
     }
-
-    return [distance,[tx,ty]];
+    return [distance*Math.cos(angle-player.angle),[tx,ty]];
 }
 function draw3d(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = gradient;
     ctx.fillRect(0,0,canvas.width, canvas.height);
-    for(let i=0; i<=90; i++){
+    for(let i=0; i<90; i++){
         const disArray = raycaster(player.angle+((i-45)*(Math.PI/180)));
         const dis = disArray[0];
         const brightness = Math.max(0,1-dis/maxDistance)
@@ -166,13 +157,41 @@ function draw3d(){
         const sx = i*10;
         
         const sy = (canvas.height-wallHeight)/2;
-
         ctx.fillStyle=`rgb(${190*brightness}, ${52*brightness}, ${52*brightness})`;
 
         ctx.fillRect(sx,sy,10,wallHeight);
     }
 }
-function genMaze(){
-    grid = [];
-    
+function genMaze(w,h){
+    let map = Array.from({ length: h }, () => Array(w).fill(1));
+    let cur = [1,1]
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i >= 1; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+    function carve(x,y){
+        let direction = [
+            [0,-2],
+            [0,2],
+            [2,0],
+            [-2,0]
+        ]
+        direction = shuffleArray(direction);
+        for (const [dx,dy] of direction ){
+            const nx = x+dx;
+            const ny = y+dy;
+            if (nx<=0||nx>=w-1||ny<=0||ny>=h-1){
+                continue;
+            }
+            if (map[ny][nx]===1){
+                map[y+dy/2][x+dx/2]=0;
+                carve(nx,ny);
+            }
+        }
+    }
+    carve(1,1);
+    return map;
 }
