@@ -1,7 +1,6 @@
 const speed = 3.2
 const turnSpeed = 2.8
 const keys = {};
-const maxDistance = 10;
 const map = [
     "1111111111",
     "1000000001",
@@ -11,6 +10,8 @@ const map = [
     "1001000001",
     "1111111111"
 ]
+const maxDistance = Math.max(map.length,map[0].length);
+
 const player = {
     px:1.5,
     py:1.5,
@@ -19,6 +20,11 @@ const player = {
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const tileSize =20;
+const gradient = ctx.createLinearGradient(0,0,0,canvas.height);
+gradient.addColorStop(0.5, "#222222");
+gradient.addColorStop(0, "#807f7f");
+gradient.addColorStop(1, "#111111");
+
 function drawMap(){
     ctx.lineWidth = 1;
     for (let y = 0; y<map.length; y++){
@@ -148,17 +154,25 @@ function raycaster(angle){
 }
 function draw3d(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0,0,canvas.width, canvas.height);
     for(let i=0; i<=90; i++){
         const disArray = raycaster(player.angle+((i-45)*(Math.PI/180)));
-
         const dis = disArray[0];
+        const brightness = Math.max(0,1-dis/maxDistance)
 
         const wallHeight = 500/dis;
 
         const sx = i*10;
+        
         const sy = (canvas.height-wallHeight)/2;
 
-        ctx.fillStyle="#7d1212";
+        ctx.fillStyle=`rgb(${190*brightness}, ${52*brightness}, ${52*brightness})`;
+
         ctx.fillRect(sx,sy,10,wallHeight);
     }
+}
+function genMaze(){
+    grid = [];
+    
 }
