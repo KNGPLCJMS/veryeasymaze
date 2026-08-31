@@ -1,17 +1,23 @@
 const speed = 3.2
 const turnSpeed = 2.8
 const keys = {};
-const map = ;
+const map = genMaze(31,31);
+let mFlag = false;
+map[29][29]=2;
 const maxDistance = Math.max(map.length,map[0].length);
-
 const player = {
     px:1.5,
     py:1.5,
     angle:0
 }
+if (map[1][2]==1){
+    player.angle = Math.PI/2;
+}
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const tileSize =20;
+
+const tileSize =5;
+
 const gradient = ctx.createLinearGradient(0,0,0,canvas.height);
 gradient.addColorStop(0.5, "#222222");
 gradient.addColorStop(0, "#807f7f");
@@ -27,34 +33,35 @@ function drawMap(){
                 ctx.fillStyle = "#575757"
             }
             ctx.fillRect(
-                x*tileSize,
-                y*tileSize,
+                x*tileSize+5,
+                y*tileSize+5,
                 tileSize,
                 tileSize,
             );
-            ctx.strokeStyle = "#222222";
-            ctx.strokeRect(
-                x*tileSize,
-                y*tileSize,
-                tileSize,
-                tileSize,
-            );
+
         }
     }
+    ctx.strokeStyle = "#222222";
+        ctx.strokeRect(
+            5,
+            5,
+            tileSize*30+5,
+            tileSize*30+5,
+    );
 }
 function drawPlayer() {
     ctx.beginPath();
-    ctx.arc(player.px*tileSize, player.py*tileSize, (tileSize*0.5)/2, 0, 2 * Math.PI);
+    ctx.arc(player.px*tileSize+5, player.py*tileSize+5, (tileSize*0.5)/2, 0, 2 * Math.PI);
     ctx.fillStyle = "#252d82";
     ctx.fill();
     ctx.lineWidth = 4;
 
     ctx.beginPath();
-    ctx.moveTo(player.px*tileSize, player.py*tileSize);
+    ctx.moveTo(player.px*tileSize+5, player.py*tileSize+5);
     ctx.strokeStyle = "#826025";
     ctx.lineTo(
-        player.px*tileSize + Math.cos(player.angle) * tileSize,
-        player.py*tileSize + Math.sin(player.angle) * tileSize
+        player.px*tileSize + Math.cos(player.angle) * tileSize+5,
+        player.py*tileSize + Math.sin(player.angle) * tileSize+5
     );
     ctx.lineWidth = 3;
     ctx.stroke();
@@ -66,21 +73,38 @@ function draw2d(){
     drawMap();
     drawPlayer();
 }
+function notInWall(hx,hy){
+        const mapX = Math.floor(hx);
+        const mapY = Math.floor(hy);
+    
+        if (mapY<0||mapY>=map.length||mapX<0||mapX>=map[mapY].length){
+            return false
+        }
+    return map[mapY][mapX]===0||map[mapY][mapX]===2
+}
+function notInWallPlayer(px,py){
+    
 
-function notInWall(px,py){
-    const mapX = Math.floor(px);
-    const mapY = Math.floor(py);
-
-    if (mapY<0||mapY>=map.length||mapX<0||mapX>=map[mapY].length){
-        return false
+    const radius = 0.1
+    const points = [
+        [px+radius,py+radius],
+        [px-radius,py+radius],
+        [px-radius,py-radius],
+        [px+radius,py-radius],
+    ]
+    for (let i = 0; i<4; i++){
+        if (!notInWall(points[i][0],points[i][1])){
+            return false;
+        }
     }
-
-    return map[mapY][mapX]===0
+    return true;
 }
 
 
 document.addEventListener("keydown",function(event){
-    if (event.key ==="ArrowUp"||event.key ==="ArrowDown"||event.key ==="ArrowLeft"||event.key ==="ArrowRight"){
+    if (event.key ==="ArrowUp"||event.key ==="ArrowDown"||event.key ==="ArrowLeft"||event.key ==="ArrowRight"||
+        event.key =="w"||event.key =="a"||event.key =="s"||event.key =="d"
+    ){
         event.preventDefault();
         keys[event.key]=true
     }
@@ -92,29 +116,29 @@ let lastTime = performance.now()
 function update(time){
     const deltaTime = Math.min((time-lastTime)/1000,0.05);
     lastTime = time;
-    if (keys["ArrowRight"]){
+    if (keys["ArrowRight"]||keys["d"]){
         player.angle+=turnSpeed*deltaTime;
     }
-    if (keys["ArrowLeft"]){
+    if (keys["ArrowLeft"]||keys["a"]){
         player.angle-=turnSpeed*deltaTime;
     }
-    if (keys["ArrowUp"]){
+    if (keys["ArrowUp"]||keys["w"]){
         const newX = player.px+Math.cos(player.angle)*speed*deltaTime
         const newY = player.py+Math.sin(player.angle)*speed*deltaTime
-        if (notInWall(newX,player.py)){
+        if (notInWallPlayer(newX,player.py)){
             player.px = newX;
         }
-        if (notInWall(player.px,newY)){
+        if (notInWallPlayer(player.px,newY)){
             player.py = newY;
         }
     }
-    if (keys["ArrowDown"]){
+    if (keys["ArrowDown"]||keys["s"]){
         const newX = player.px-Math.cos(player.angle)*speed*deltaTime
         const newY = player.py-Math.sin(player.angle)*speed*deltaTime
-        if (notInWall(newX,player.py)){
+        if (notInWallPlayer(newX,player.py)){
             player.px = newX;
         }
-        if (notInWall(player.px,newY)){
+        if (notInWallPlayer(player.px,newY)){
             player.py = newY;
 
         }
@@ -124,6 +148,7 @@ function update(time){
         player.angle+=Math.PI*2
     }
     draw3d()
+    if(mFlag){draw2d()}
     requestAnimationFrame(update);
 
 }
@@ -150,21 +175,26 @@ function draw3d(){
     for(let i=0; i<90; i++){
         const disArray = raycaster(player.angle+((i-45)*(Math.PI/180)));
         const dis = disArray[0];
-        const brightness = Math.max(0,1-dis/maxDistance)
+        const brightness = Math.max(0,1-dis*2.3/maxDistance)
 
         const wallHeight = 500/dis;
 
         const sx = i*10;
         
         const sy = (canvas.height-wallHeight)/2;
-        ctx.fillStyle=`rgb(${190*brightness}, ${52*brightness}, ${52*brightness})`;
-
+        const hitC = disArray[1];
+        if(Math.floor(hitC[0])>=29&&Math.floor(hitC[1])>=29){
+            ctx.fillStyle=`rgb(${96*brightness}, ${186*brightness}, ${92*brightness})`
+        }
+        else {
+            ctx.fillStyle=`rgb(${190*brightness}, ${52*brightness}, ${52*brightness})`;
+        }
         ctx.fillRect(sx,sy,10,wallHeight);
     }
 }
 function genMaze(w,h){
-    let map = Array.from({ length: h }, () => Array(w).fill(1));
-    let cur = [1,1]
+    let maze = Array.from({ length: h }, () => Array(w).fill(1));
+    maze[1][1]=0;
     function shuffleArray(array) {
         for (let i = array.length - 1; i >= 1; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -172,26 +202,43 @@ function genMaze(w,h){
         }
         return array;
     }
-    function carve(x,y){
-        let direction = [
+    let direction = [
             [0,-2],
             [0,2],
             [2,0],
             [-2,0]
-        ]
+    ];
+    let stack = [[1,1]];
+    while (stack.length>0){
+        const ox = stack[stack.length-1][0];
+        const oy = stack[stack.length-1][1];
+        let cflag = true;
         direction = shuffleArray(direction);
         for (const [dx,dy] of direction ){
-            const nx = x+dx;
-            const ny = y+dy;
+            const nx = ox+dx;
+            const ny = oy+dy;
             if (nx<=0||nx>=w-1||ny<=0||ny>=h-1){
                 continue;
             }
-            if (map[ny][nx]===1){
-                map[y+dy/2][x+dx/2]=0;
-                carve(nx,ny);
+            if (maze[ny][nx]===1){
+                maze[oy + dy / 2][ox + dx / 2] = 0;
+                maze[ny][nx]=0;
+                stack.push([nx,ny]);
+                cflag = false;
+                break;
             }
         }
+        if (cflag){
+            stack.pop();
+        }
+
     }
-    carve(1,1);
-    return map;
+    return maze;
+}
+function minimap(){
+    if (mFlag) {
+        mFlag = false
+    } else{
+        mFlag = true
+    }
 }
