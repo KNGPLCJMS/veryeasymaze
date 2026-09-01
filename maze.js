@@ -3,6 +3,7 @@ const turnSpeed = 2.8
 const keys = {};
 const map = genMaze(31,31);
 let mFlag = false;
+let cpFlag = false;
 map[29][29]=2;
 const maxDistance = Math.max(map.length,map[0].length);
 const player = {
@@ -53,13 +54,13 @@ function drawMap(){
 function drawPlayer() {
     ctx.beginPath();
     ctx.arc(player.px*tileSize+5, player.py*tileSize+5, (tileSize*0.5)/2, 0, 2 * Math.PI);
-    ctx.fillStyle = "#252d82";
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
     ctx.lineWidth = 4;
 
     ctx.beginPath();
     ctx.moveTo(player.px*tileSize+5, player.py*tileSize+5);
-    ctx.strokeStyle = "#826025";
+    ctx.strokeStyle = "#ffffff";
     ctx.lineTo(
         player.px*tileSize + Math.cos(player.angle) * tileSize+5,
         player.py*tileSize + Math.sin(player.angle) * tileSize+5
@@ -153,6 +154,7 @@ function update(time){
     }
     draw3d()
     if(mFlag){draw2d()}
+    if(cpFlag){drawCompass()}
     requestAnimationFrame(update);
 
 }
@@ -246,3 +248,70 @@ function minimap(){
         mFlag = true
     }
 }
+function drawCompass(){
+    ctx.beginPath();
+    ctx.arc(tileSize*170, tileSize*7, (tileSize*5), 0, 2 * Math.PI);
+    ctx.fillStyle = "#f5f5f5";
+    ctx.fill();
+    ctx.lineWidth = 4;
+
+    ctx.beginPath();
+    ctx.arc(tileSize*170, tileSize*7, (tileSize*3.25), 0, 2 * Math.PI);
+    ctx.strokeStyle = "#383636";
+    ctx.stroke();
+    ctx.lineWidth = 4;
+
+    ctx.beginPath();
+    ctx.moveTo(tileSize*170, tileSize*7);
+    ctx.strokeStyle = "#ce1a1a";
+    ctx.lineTo(
+    tileSize*170 + Math.cos(player.angle+Math.PI/2) * tileSize*4.5,
+    tileSize*7 + Math.sin(player.angle+Math.PI/2) * tileSize*4.5
+);
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(tileSize*170, tileSize*7);
+    ctx.strokeStyle = "#838383";
+    ctx.lineTo(
+    tileSize*170 + Math.cos(player.angle) * tileSize*4.5,
+    tileSize*7 + Math.sin(player.angle) * tileSize*4.5
+);
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(tileSize*170, tileSize*7);
+    ctx.strokeStyle = "#838383";
+    ctx.lineTo(
+    tileSize*170 + Math.cos(player.angle-Math.PI/2) * tileSize*4.5,
+    tileSize*7 + Math.sin(player.angle-Math.PI/2) * tileSize*4.5
+);
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(tileSize*170, tileSize*7);
+    ctx.strokeStyle = "#838383";
+    ctx.lineTo(
+    tileSize*170 + Math.cos(player.angle+Math.PI) * tileSize*4.5,
+    tileSize*7 + Math.sin(player.angle+Math.PI) * tileSize*4.5
+);
+    ctx.lineWidth = 3;
+    ctx.stroke();
+}
+function compass(){
+    if (cpFlag) {
+        cpFlag = false
+    } else{
+        cpFlag = true
+    }
+}
+
