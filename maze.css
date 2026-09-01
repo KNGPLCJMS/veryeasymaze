@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: Impact, Haettenschweiler;
+  background: #bdc9db;
+}
+
+h1 {
+  color: rgb(58, 58, 58);
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 12px 24px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  background: rgb(52, 190, 68);
+  color: rgb(255, 255, 255);
+  cursor: pointer;
+  transition: 0.2s ease;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+button:hover {
+  background: rgb(87, 107, 87);
+  transform: scale(1.5);
+}
