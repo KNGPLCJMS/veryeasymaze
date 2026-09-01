@@ -10,6 +10,7 @@ const player = {
     py:1.5,
     angle:0
 }
+//player.px = 29.1; player.py = 29.1;
 if (map[1][2]==1){
     player.angle = Math.PI/2;
 }
@@ -142,6 +143,9 @@ function update(time){
             player.py = newY;
 
         }
+    }
+    if (Math.floor(player.px)==29&&Math.floor(player.py)==29){
+        window.location.href = "winner.html";
     }
     player.angle %= Math.PI*2;
     if (player.angle<0){
