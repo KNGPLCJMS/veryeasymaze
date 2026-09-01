@@ -7,7 +7,7 @@
     <!--Loader is needed to prevent some issues-->
     <style>
       * { box-sizing: border-box; }
-
+    
       body {
         margin: 0;
         height: 100vh;
@@ -22,8 +22,10 @@
       .loading {
         text-align: center;
       }
-
-      .spinner {
+      #dialogue{
+        color: #f5f5f5;
+      }
+      #spinner {
         width: 45px;
         height: 45px;
         margin: auto;
@@ -66,7 +68,10 @@
     <body>
 
     <div class="loading">
-      <div class="spinner"></div>
+        <h1>You won</h1>
+      <div id="spinner"></div>
+      <button id="but" onclick="start()"> See Prize
+      </button>
     </div>
 
     <div id="prize">
@@ -98,16 +103,28 @@
         <circle cx="320" cy="215" r="7" fill="red"/>
       </svg>
       <img src="cake.png" alt="Cake" width="1">
+    <audio id="sound" src="confettiCannon.mp3" preload="auto"></audio>
     </div>
-
+    <div id="dialogue">
+        <h1>Sorry About That</h1>
+    </div>
     <script>
-        <!-- Prevents Glitch with dancing -->
-      setTimeout(() => {
+        document.getElementById("dialogue").style.display = "none"
+        document.getElementById("spinner").style.display = "none"
+      function start(){
+        
+        document.getElementById("but").style.display = "none"
+        document.getElementById("spinner").style.display= "block"
+
+        setTimeout(() => {
         document.getElementById("prize").style.display = "flex";
+        document.getElementById("sound").play();
+        
       }, 5000);
       setTimeout(() => {
+        document.getElementById("dialogue").style.display = "block"
         document.getElementById("face").style.animation = "none";
-      }, 6000);
+      }, 6000);}
 
     </script>
 
