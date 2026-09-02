@@ -146,7 +146,7 @@ function update(time){
         }
     }
     if (Math.floor(player.px)==29&&Math.floor(player.py)==29){
-        window.location.href = "winner.html";
+        //window.location.href = "winner.html";
     }
     player.angle %= Math.PI*2;
     if (player.angle<0){
