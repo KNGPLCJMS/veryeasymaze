@@ -167,13 +167,18 @@ function raycaster(angle){
 
     const testSize = 0.02;
     let distance = 0;
+    let side = 0
     while (notInWall(tx,ty)&&distance<maxDistance){
         tx+=Math.cos(angle)*testSize;
         ty+=Math.sin(angle)*testSize;
         distance+=testSize;
     }
-    return [distance*Math.cos(angle-player.angle),[tx,ty]];
+    if (Math.floor(tx-Math.cos(angle)*testSize) !==Math.floor(tx)){
+        side = 0.5;
+    }
+    return [distance*Math.cos(angle-player.angle),[tx,ty],side];
 }
+
 function draw3d(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = gradient;
@@ -181,7 +186,7 @@ function draw3d(){
     for(let i=0; i<90; i++){
         const disArray = raycaster(player.angle+((i-45)*(Math.PI/180)));
         const dis = disArray[0];
-        const brightness = Math.max(0,1-dis*2.3/maxDistance)
+        const brightness = Math.max(0,1-dis*2.3*disArray[2]/maxDistance)
 
         const wallHeight = 500/dis;
 
