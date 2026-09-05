@@ -1,17 +1,22 @@
 const speed = 3.2
 const turnSpeed = 2.8
 const keys = {};
-const map = genMaze(31,31);
+const playElem = document.getElementById("play");
+const timerTextEnd = document.getElementById("timerTextEnd");
+let mmuFlag = false;
+let cpuFlag = false;
+let map = genMaze(31,31);
 let mFlag = false;
 let cpFlag = false;
+let timer = 0;
 map[29][29]=2;
+let play = true;
 const maxDistance = Math.max(map.length,map[0].length);
 const player = {
     px:1.5,
     py:1.5,
     angle:0
 }
-//player.px = 29.1; player.py = 29.1;
 if (map[1][2]==1){
     player.angle = Math.PI/2;
 }
@@ -118,6 +123,8 @@ let lastTime = performance.now()
 function update(time){
     const deltaTime = Math.min((time-lastTime)/1000,0.05);
     lastTime = time;
+    if(play){
+    timer+=deltaTime;
     if (keys["ArrowRight"]||keys["d"]){
         player.angle+=turnSpeed*deltaTime;
     }
@@ -147,6 +154,7 @@ function update(time){
     }
     if (Math.floor(player.px)==29&&Math.floor(player.py)==29){
         //window.location.href = "winner.html";
+        play = false;
     }
     player.angle %= Math.PI*2;
     if (player.angle<0){
@@ -155,6 +163,15 @@ function update(time){
     draw3d()
     if(mFlag){draw2d()}
     if(cpFlag){drawCompass()}
+    } 
+    if(play){
+        playElem.style.display = "none";
+    }else {
+        playElem.style.display = "flex";
+        timerTextEnd.textContent = String(Math.max(timer.toFixed(2),0.1))+"s";
+        document.getElementById("extTxT1").textContent = "Used Minimap:"+String(mmuFlag);
+        document.getElementById("extTxT2").textContent = "Used Compass:"+String(cpuFlag);
+    }
     requestAnimationFrame(update);
 
 }
@@ -243,11 +260,12 @@ function genMaze(w,h){
     return maze;
 }
 function minimap(){
+    if(play){mmuFlag = true;
     if (mFlag) {
         mFlag = false
     } else{
         mFlag = true
-    }
+    }}
 }
 function drawCompass(){
     ctx.beginPath();
@@ -309,10 +327,28 @@ function drawCompass(){
     ctx.stroke();
 }
 function compass(){
+    if(play){cpuFlag = true;
     if (cpFlag) {
         cpFlag = false
     } else{
         cpFlag = true
-    }
+    }}
 }
 
+function playStart(){
+    play = true;
+    cpuFlag = false;
+    mmuFlag = false;
+    map = genMaze(31,31)
+    player.px=1.5;
+    player.py=1.5;
+    player.angle=0;
+    if (map[1][2]==1){
+        player.angle = Math.PI/2;
+    }
+    timer = 0;
+}
+function DEBUG__WIN(){
+    player.px = 29.1;
+    player.py = 29.1
+}

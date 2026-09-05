@@ -8,8 +8,19 @@
 </head>
 <body>
     <h1>Very Easy Maze</h1>
+    <div id = "canvasContainer">
     <canvas id="canvas" width = "900" height="500"></canvas>
-    <br>
+    <div id="play">
+        <button onclick="playStart()" style="margin-bottom: 5px;">Play Again</button>
+        <br>
+        <h5 id="timerTextEnd"></h5>
+        <br>
+        <h5 id="extTxT1"></h5>
+        <br>
+        <h5 id="extTxT2"></h5>
+    </div>
+    </div>
+    <button onclick="DEBUG__WIN()">DEBUG__WIN</button>
     <button onclick="minimap()">Minimap</button>
     <button onclick="compass()">Compass</button>
     <script src="maze.js"></script>
