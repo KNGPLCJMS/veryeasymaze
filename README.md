@@ -1,5 +1,6 @@
 # Very Easy Maze
 <img width="1810" height="1016" alt="image" src="https://github.com/user-attachments/assets/56c75cdd-ae0d-4953-9a75-78082540ea1f" />
+
 **A simple 3d raycaster game made in plain HTML and JS**
 **TRY IT HERE: **
 ## Features
